@@ -1,13 +1,15 @@
 # MailingFerret
 A simple Email Sender with Razor email templates support for .NET Core.
 
-It requires access to a SMTP. Razor email templates are optional.
+It requires access to a SMTP. 
+
+Razor email templates are optional. You can provide the email body as a string.
 
 # How to install
 You can install this package via Nuget (https://www.nuget.org/packages/MailingFerret/). 
 
 # Setting up
-First, register *MailingFerret* as a Service in *Startup.cs#:
+First, register *MailingFerret* as a Service in *Startup.cs*:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
