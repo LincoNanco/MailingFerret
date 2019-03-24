@@ -11,6 +11,8 @@
     <PackageLicenseUrl>https://github.com/LincoNanco/MailingFerret/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/LincoNanco/MailingFerret</RepositoryUrl>
+    <PackageVersion>1.0.2</PackageVersion>
+    <Author>Linco Ñanco</Author>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
