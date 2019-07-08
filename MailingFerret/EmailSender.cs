@@ -36,6 +36,15 @@ namespace MailingFerret
             _client = new SmtpClient(MailHost);
             _client.UseDefaultCredentials = false;
             _client.Credentials = new NetworkCredential(MailUser, MailPassword);
+
+            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:Port"]))
+            {
+                _client.Port = Convert.ToInt32(configuration["MailingFerret:Port"]);
+            }
+            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:EnableSsl"]))
+            {
+                _client.EnableSsl = Convert.ToBoolean(configuration["MailingFerret:EnableSsl"]);
+            }
         }
 
         private MailMessage BuildEmailMessage(string subject, string message)
