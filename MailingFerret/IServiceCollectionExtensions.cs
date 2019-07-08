@@ -1,4 +1,5 @@
 using MailingFerret.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -17,6 +18,7 @@ namespace MailingFerret
         public static void AddMailingFerret(this IServiceCollection services)
         {
             //Add an implementation of IViewRenderService only if it is not already provided
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<IViewRenderService, ViewRenderService>();
             services.AddScoped<IEmailSender, EmailSender>();
         }

@@ -18,20 +18,22 @@ namespace MailingFerret
         private readonly IRazorViewEngine _razorViewEngine;
         private readonly ITempDataProvider _tempDataProvider;
         private readonly IServiceProvider _serviceProvider;
+        private readonly HttpContext _context; //Adding this to support URL rendering in Razor templates (asp-controller, asp-action)
 
         public ViewRenderService(IRazorViewEngine razorViewEngine,
             ITempDataProvider tempDataProvider,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IHttpContextAccessor accessor)
         {
             _razorViewEngine = razorViewEngine;
             _tempDataProvider = tempDataProvider;
             _serviceProvider = serviceProvider;
+            _context = accessor.HttpContext;
         }
 
         public async Task<string> RenderToStringAsync(string viewName, object model)
         {
-            var httpContext = new DefaultHttpContext { RequestServices = _serviceProvider };
-            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            var actionContext = new ActionContext(_context, _context.GetRouteData(), new ActionDescriptor());
 
             using (var sw = new StringWriter())
             {
@@ -51,10 +53,11 @@ namespace MailingFerret
                     actionContext,
                     viewResult.View,
                     viewDictionary,
-                    new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
+                    new TempDataDictionary(_context, _tempDataProvider),
                     sw,
                     new HtmlHelperOptions()
                 );
+                viewContext.RouteData = _context.GetRouteData();
 
                 await viewResult.View.RenderAsync(viewContext);
                 return sw.ToString();
