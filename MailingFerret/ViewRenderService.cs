@@ -33,7 +33,7 @@ namespace MailingFerret
 
         public async Task<string> RenderToStringAsync(string viewName, object model)
         {
-            var actionContext = new ActionContext(_context, _context.GetRouteData(), new ActionDescriptor());
+            var actionContext = new ActionContext(_context, new RouteData(), new ActionDescriptor());
 
             using (var sw = new StringWriter())
             {
