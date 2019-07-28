@@ -59,7 +59,15 @@ namespace MailingFerret
 
         private Task SendEmail(MailMessage mailMessage)
         {
-            _client.Send(mailMessage);
+
+            using (_client)  
+            {
+                MailMessage mail = new MailMessage();
+                // your code here.
+
+                _client.Send(mailMessage);
+            }
+            
             return Task.CompletedTask;
         }
         /// <summary>
