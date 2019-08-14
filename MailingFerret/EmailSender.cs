@@ -18,11 +18,12 @@ namespace MailingFerret
         public readonly string MailPassword;
         public readonly string MailAccount;
         public readonly string TemplatesLocation;
-        private readonly SmtpClient _client;
         private readonly IViewRenderService _emailRenderer;
+        readonly IConfiguration _configuration;
 
         public EmailSender(IViewRenderService renderService, IConfiguration configuration)
         {
+            _configuration = configuration;
             if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailHost"])) throw new ArgumentException(nameof(MailHost));
             MailHost = configuration["MailingFerret:EmailHost"];
             if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailUser"])) throw new ArgumentException(nameof(MailUser));
@@ -33,18 +34,23 @@ namespace MailingFerret
             MailAccount = configuration["MailingFerret:EmailAccount"];
             TemplatesLocation = configuration["MailingFerret:TemplatesLocation"];
             _emailRenderer = renderService;
-            _client = new SmtpClient(MailHost);
-            _client.UseDefaultCredentials = false;
-            _client.Credentials = new NetworkCredential(MailUser, MailPassword);
+        }
 
-            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:Port"]))
+        private SmtpClient GetSmtpClient()
+        {
+            SmtpClient client = new SmtpClient(MailHost);
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(MailUser, MailPassword);
+
+            if (!string.IsNullOrWhiteSpace(_configuration["MailingFerret:Port"]))
             {
-                _client.Port = Convert.ToInt32(configuration["MailingFerret:Port"]);
+                client.Port = Convert.ToInt32(_configuration["MailingFerret:Port"]);
             }
-            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:EnableSsl"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["MailingFerret:EnableSsl"]))
             {
-                _client.EnableSsl = Convert.ToBoolean(configuration["MailingFerret:EnableSsl"]);
+                client.EnableSsl = Convert.ToBoolean(_configuration["MailingFerret:EnableSsl"]);
             }
+            return client;
         }
 
         private MailMessage BuildEmailMessage(string subject, string message)
@@ -59,7 +65,10 @@ namespace MailingFerret
 
         private Task SendEmail(MailMessage mailMessage)
         {
-            _client.Send(mailMessage);
+            using (SmtpClient client = GetSmtpClient())
+            {
+                client.Send(mailMessage);
+            }
             return Task.CompletedTask;
         }
         /// <summary>
