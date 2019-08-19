@@ -26,21 +26,26 @@ namespace MailingFerret
             _configuration = configuration;
             if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailHost"])) throw new ArgumentException(nameof(MailHost));
             MailHost = configuration["MailingFerret:EmailHost"];
-            if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailUser"])) throw new ArgumentException(nameof(MailUser));
-            MailUser = configuration["MailingFerret:EmailUser"];
-            if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailPassword"])) throw new ArgumentException(nameof(MailPassword));
-            MailPassword = configuration["MailingFerret:EmailPassword"];
             if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailAccount"])) throw new ArgumentException(nameof(MailAccount));
             MailAccount = configuration["MailingFerret:EmailAccount"];
             TemplatesLocation = configuration["MailingFerret:TemplatesLocation"];
             _emailRenderer = renderService;
+            
+            //network credentials are optional now
+            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailUser"])) MailUser = configuration["MailingFerret:EmailUser"];
+            if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailPassword"])) MailPassword = configuration["MailingFerret:EmailPassword"];
         }
 
         private SmtpClient GetSmtpClient()
         {
             SmtpClient client = new SmtpClient(MailHost);
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(MailUser, MailPassword);
+
+            //setting network credentials only if they are defined
+            if (!string.IsNullOrEmpty(MailUser))
+            {
+                client.Credentials = new NetworkCredential(MailUser, MailPassword);
+            }
 
             if (!string.IsNullOrWhiteSpace(_configuration["MailingFerret:Port"]))
             {
