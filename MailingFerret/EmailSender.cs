@@ -33,7 +33,7 @@ namespace MailingFerret
             
             //network credentials are optional now
             if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailUser"])) MailUser = configuration["MailingFerret:EmailUser"];
-            if (string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailPassword"])) MailPassword = configuration["MailingFerret:EmailPassword"];
+            if (!string.IsNullOrWhiteSpace(configuration["MailingFerret:EmailPassword"])) MailPassword = configuration["MailingFerret:EmailPassword"];
         }
 
         private SmtpClient GetSmtpClient()
